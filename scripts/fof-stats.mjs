@@ -1,4 +1,4 @@
-const data = {
+export const monsterStats = {
 	"CR 0": {"acdc": 10, "hp": "3 (2-4)", "atkprof": "+2", "dpr": "2", "atks": "1", "dmg": "2 (1d4)"},
 	"CR 1/8": {"acdc": 11, "hp": "9 (7-11)", "atkprof": "+3", "dpr": "3", "atks": "1", "dmg": "4 (1d6 + 1)"},
 	"CR 1/4": {"acdc": 11, "hp": "13 (10-16)", "atkprof": "+3", "dpr": "5", "atks": "1", "dmg": "5 (1d6 + 2)"},
@@ -34,3 +34,41 @@ const data = {
 	"CR 29": {"acdc": 26, "hp": "600 (450-750)", "atkprof": "+18", "dpr": "294", "atks": "5", "dmg": "59 (6d10 + 26)"},
 	"CR 30": {"acdc": 27, "hp": "666 (500-833)", "atkprof": "+19", "dpr": "312", "atks": "5", "dmg": "62 (6d10 + 29)"}
 };
+
+export async function newFofActor(formData){
+	if(formData.monsterName.trim() === ''){
+		formData.monsterName = 'New Monster'
+	}
+
+	const selStats = monsterStats[formData.crSelect];
+
+	const newActor = await Actor.create({
+        name: formData.monsterName,
+        type: "npc"
+    });
+	const dummy = {...newActor};
+
+	//set CR
+	const crValue = /(?<cr>(½|[\d\/]+))\s?(\((?<xp>[\d,]+)\s?xp\))?/i.exec(formData.crSelect).groups.cr;
+	if (crValue.includes("/")) {
+		dummy.system.attributes.cr = parseFraction(crValue);
+	} else {
+		dummy.system.attributes.cr = parseInt(crValue);
+	}
+	
+
+}
+
+
+function parseFraction(string) {
+    let result = null;
+    const numbers = string.split("/");
+
+    if (numbers.length == 2) {
+        const numerator = parseFloat(numbers[0]);
+        const denominator = parseFloat(numbers[1]);
+        result = numerator / denominator;
+    }
+
+    return result;
+}
