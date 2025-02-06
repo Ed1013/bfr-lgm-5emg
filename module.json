@@ -1,0 +1,19 @@
+{
+    "id": "bfr-fof-stats-generator",
+    "title": "Forge of Foes Statblock Generator",
+    "description": "Generate a new actor using Forge of Foes based stats.",
+    "authors": [
+      {
+        "name": "ed"
+      }
+    ],
+    "version": "0.0.1",
+    "compatibility": {
+        "minimum": "12",
+        "verified": "12"
+    },
+    "socket":true,
+    "esmodules":[
+      "scripts/init-fof-module.mjs"
+    ]
+  }
