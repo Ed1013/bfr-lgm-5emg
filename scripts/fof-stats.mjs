@@ -75,9 +75,9 @@ export async function newFofActor(formData){
 			system: { description: { value: `The ${newActor.name} makes ${selStats.atks} attacks.`}, 
 			activities: newActivity("utility", "action")}}]);
 	}
-	//Set main attack
+	//get damage value rolls
 	const dmgValue = /\(((?<dicenum>\d*)d(?<dicedenom>\d*)).\+.(?<bonus>\d*)\)/.exec(selStats.dmg)[0] //get damage value
-
+	//Set main attack
 	const newAtk = {"system":{"attack":{"bonus":selStats.atkprof, "flat": true}, "damage":{"parts":[{"additionalTypes": [ ], "bonus": dmgValue.groups.bonus, "custom": { "enabled": false, "formula": "" }, "denomination": parseInt(dmgValue.groups.dicedenom), "number": parseInt(dmgValue.groups.dicenum), "scaling": { "number": 1 }, "type": ""}]}}}
 
 	await newActor.createEmbeddedDocuments("Item",[{ name:"Attack", type: "feature", 
