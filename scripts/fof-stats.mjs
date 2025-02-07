@@ -66,6 +66,14 @@ export async function newFofActor(formData){
 	assignToObject(dummy,"system.attributes.hp.max",hpValue);
     assignToObject(dummy,"system.attributes.hp.value",hpValue);
 
+	//Set abilities
+	for(const ability of formData["abilities[]"]){
+		if(ability){
+        	assignToObject(dummy,`system.abilities.${ability}.mod`,abilityAssign(dummy.system.attributes.cr));
+			assignToObject(dummy,`system.abilities.${ability}.proficient`,true);
+		}
+    }
+
 	await newActor.update(dummy);
 
 	//set Attack
@@ -76,9 +84,9 @@ export async function newFofActor(formData){
 			activities: newActivity("utility", "action")}}]);
 	}
 	//get damage value rolls
-	const dmgValue = /\(((?<dicenum>\d*)d(?<dicedenom>\d*)).\+.(?<bonus>\d*)\)/.exec(selStats.dmg)[0] //get damage value
+	const dmgValue = /\(((?<dicenum>\d*)d(?<dicedenom>\d*))(.\+.(?<bonus>\d*))?\)/.exec(selStats.dmg)//get damage value
 	//Set main attack
-	const newAtk = {"system":{"attack":{"bonus":selStats.atkprof, "flat": true}, "damage":{"parts":[{"additionalTypes": [ ], "bonus": dmgValue.groups.bonus, "custom": { "enabled": false, "formula": "" }, "denomination": parseInt(dmgValue.groups.dicedenom), "number": parseInt(dmgValue.groups.dicenum), "scaling": { "number": 1 }, "type": ""}]}}}
+	const newAtk = {"system":{"attack":{"bonus":selStats.atkprof, "flat": true}, "damage":{"parts":[{"additionalTypes": [ ], "bonus": (dmgValue.groups?.bonus)? dmgValue.groups.bonus : "", "custom": { "enabled": false, "formula": "" }, "denomination": parseInt(dmgValue.groups.dicedenom), "number": parseInt(dmgValue.groups.dicenum), "scaling": { "number": 1 }, "type": ""}]}}}
 
 	await newActor.createEmbeddedDocuments("Item",[{ name:"Attack", type: "feature", 
 		system: { description: { value: `<em>Melee or Ranged Weapon Attack:</em> [[/attack]] reach 5 ft. or range 60 ft., one target. <em>Hit:</em> [[/damage average]] damage`}, 
@@ -123,6 +131,12 @@ function assignToObject(obj, path, val) {
     }
 
     return obj;
+}
+
+function abilityAssign(cr){
+
+	return 3;
+
 }
 
 //Templates for objects
