@@ -33,7 +33,22 @@ function initForm(){
         ${generateCRs()}
     </select><br />
     <label for="monsterName">Monster Name: </label>
-    <input name="monsterName" id="monsterName" type="text" />`
+    <input name="monsterName" id="monsterName" type="text" />
+    <br>Proficient Abilities:<br>
+    <div id="abilityScores">
+        <input type="checkbox" id="str" name="abilities[]" value="strength">    
+        <label for="str">STR</label>
+        <input type="checkbox" id="dex" name="abilities[]" value="dexterity">
+        <label for="dex">DEX</label>
+        <input type="checkbox" id="con" name="abilities[]" value="constitution">
+        <label for="con">CON</label>
+        <input type="checkbox" id="int" name="abilities[]" value="intelligence">
+        <label for="int">INT</label>
+        <input type="checkbox" id="wis" name="abilities[]" value="wisdom">
+        <label for="wis">WIS</label>
+        <input type="checkbox" id="cha" name="abilities[]" value="charisma">
+        <label for="cha">CHA</label>
+    </div>`
 
     form += '</form>';
     return form;
