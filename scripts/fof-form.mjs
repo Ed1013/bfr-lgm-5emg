@@ -2,7 +2,7 @@ import { monsterStats, newFofActor } from "./fof-stats.mjs";
 
 export async function renderGeneratorWindow(){
     new Dialog({
-        title: `Statblock Generator`,
+        title: `New Monster Stats`,
         content: initForm(),
         buttons: {
             yes: {
