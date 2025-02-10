@@ -46,6 +46,7 @@ export async function newFofActor(formData){
         name: formData.monsterName,
         type: "npc"
     });
+	//placeholder object to edit changes
 	const dummy = {...newActor};
 
 	//set CR
@@ -69,11 +70,16 @@ export async function newFofActor(formData){
 	//Set abilities
 	for(const ability of formData["abilities[]"]){
 		if(ability){
-        	assignToObject(dummy,`system.abilities.${ability}.mod`,abilityAssign(dummy.system.attributes.cr));
 			assignToObject(dummy,`system.abilities.${ability}.proficient`,true);
+			assignToObject(dummy,`system.abilities.${ability}.mod`,abilityAssign(newActor.system.attributes.cr, selStats.atkprof));
 		}
-    }
+	}
 
+	//Set Stealth and Perception
+	assignToObject(dummy,'system.attributes.stealth', 10 + ((dummy.system.abilities?.dexterity.mod)? dummy.system.abilities.dexterity.mod : 0));
+	assignToObject(dummy,'system.attributes.perception', 10 + ((dummy.system.abilities?.wisdom.mod)? dummy.system.abilities.wisdom.mod : 0));
+
+	//Add modifications to new actor
 	await newActor.update(dummy);
 
 	//set Attack
@@ -133,9 +139,13 @@ function assignToObject(obj, path, val) {
     return obj;
 }
 
-function abilityAssign(cr){
+function abilityAssign(cr,crprof){
 
-	return 3;
+	if(cr === 0){
+		return 1;
+	}
+
+	return parseInt(crprof);
 
 }
 
