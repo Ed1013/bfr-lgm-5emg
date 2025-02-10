@@ -1,21 +1,23 @@
-## Lazy GM's 5e Monster Builder
-A module for the Foundry VTT Black Flag Roleplaying system.
-Deploy a new monster in Foundry using stats from the [Lazy GM's 5e Monster Builder](https://slyflourish.com/lazy_5e_monster_building_resource_document.html).
+## Lazy GM's 5e Monster Generator
+A module for the Foundry VTT Black Flag Roleplaying system. Deploy a new monster in Foundry using stats from the [Lazy GM's 5e Monster Builder](https://slyflourish.com/lazy_5e_monster_building_resource_document.html).
 
 ## How to Use
 When the module is active, you will see a button at the bottom of the actors tab labeled "Generate Monster"
 
 ![Image1](images/readme_image_1.webp)
 
-Clicking the button will open a window to specify the desired monster's CR.
+Clicking the button will open a window: 
+- Select the desired monster's CR.
+- *Optionally*, you can specify the monster's name and choose the monster's proficient abilities.
 
 ![Image2](images/readme_image_2.webp)
 
-Optionally, you can specify the monster's name and choose the monster's proficient abilities.
+
+When you click Submit a new actor will be created with the specified monster name (or 'New Monster' if name not specified).
 
 ![Image3](images/readme_image_3.webp)
 
-When you click Submit a new actor will be created with the specified monster name (or 'New Monster' if not specified).
+The new monster will have the stats corresponding to the selected CR based on the Lazy GM's 5e Monster Builder.
 
 ## Attribution
 
@@ -25,4 +27,4 @@ This work includes material taken from the System Reference Document 5.1 ("SRD 5
 
 ## Credit
 
-Took several ideas from my favorite module [5e-statblock-importer](https://github.com/jbhaywood/5e-statblock-importer/tree/main).
+Took several ideas from my favorite module [5e-statblock-importer](https://github.com/jbhaywood/5e-statblock-importer/tree/main) and from Mike Shea's <ins>Forge of Foes 5e Monster Stats App</ins> available for Patrons of the [Sly Flourish](https://www.patreon.com/c/slyflourish/) Patreon.
