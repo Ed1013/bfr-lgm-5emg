@@ -19,6 +19,13 @@ When you click Submit a new actor will be created with the specified monster nam
 
 The new monster will have the stats corresponding to the selected CR based on the Lazy GM's 5e Monster Builder.
 
+## Installation
+1. Open the Foundry Setup screen and navigate to the Add-on Modules tab.
+1. Click the "Install Module" button.
+1. Use the following Manifest URL: https://github.com/Ed1013/bfr-lgm-5emg/releases/latest/download/module.json
+1. Click "Install."
+
+
 ## Attribution
 
 This work includes material taken from the [Lazy GM's 5e Monster Builder Resource Document](https://slyflourish.com/lazy_5e_monster_building_resource_document.html) written by Teos Abadía of [Alphastream.org](https://alphastream.org/), Scott Fitzgerald Gray of [Insaneangel.com](https://insaneangel.com/), and Michael E. Shea of [SlyFlourish.com](https://slyflourish.com/), available under a [Creative Commons Attribution 4.0 International License](http://creativecommons.org/licenses/by/4.0/).
