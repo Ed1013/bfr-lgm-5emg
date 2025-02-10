@@ -4,11 +4,17 @@ Deploy a new monster in Foundry using stats from the [Lazy GM's 5e Monster Build
 
 ## How to Use
 When the module is active, you will see a button at the bottom of the actors tab labeled "Generate Monster"
+
 ![Image1](images/readme_image_1.webp)
+
 Clicking the button will open a window to specify the desired monster's CR.
+
 ![Image2](images/readme_image_2.webp)
+
 Optionally, you can specify the monster's name and choose the monster's proficient abilities.
+
 ![Image3](images/readme_image_3.webp)
+
 When you click Submit a new actor will be created with the specified monster name (or 'New Monster' if not specified).
 
 ## Attribution
