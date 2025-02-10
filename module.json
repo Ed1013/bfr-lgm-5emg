@@ -1,6 +1,6 @@
 {
-    "id": "bfr-fof-stats-generator",
-    "title": "Forge of Foes Statblock Generator",
+    "id": "bfr-lgm-5emg",
+    "title": "Lazy GM's 5e Monster Generator",
     "description": "Generate a new actor using Forge of Foes based stats.",
     "authors": [
       {
@@ -18,5 +18,5 @@
     ],
     "url": "https://github.com/Ed1013/bfr-lgm-5emg",
     "manifest": "https://raw.githubusercontent.com/Ed1013/bfr-lgm-5emg/refs/tags/0.0.1/module.json",
-    "download": "https://github.com/Ed1013/bfr-lgm-5emg/archive/refs/tags/0.0.1.zip"
+    "download": "https://github.com/Ed1013/bfr-lgm-5emg/archive/0.0.1.zip"
   }
