@@ -17,6 +17,6 @@
       "scripts/init-fof-module.mjs"
     ],
     "url": "https://github.com/Ed1013/bfr-lgm-5emg",
-    "manifest": "https://raw.githubusercontent.com/Ed1013/bfr-lgm-5emg/refs/tags/0.0.1/module.json",
+    "manifest": "https://raw.githubusercontent.com/Ed1013/bfr-lgm-5emg/0.0.1/module.json",
     "download": "https://github.com/Ed1013/bfr-lgm-5emg/archive/0.0.1.zip"
   }
