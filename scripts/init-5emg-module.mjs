@@ -1,4 +1,5 @@
 import { renderGeneratorWindow } from './5emg-form.mjs'
+import { mgApi } from './5emg-api.mjs';
 
 console.log('bfr-lgm-5emg Monster Generator | Is loaded!');
 
@@ -12,4 +13,10 @@ Hooks.on("renderActorDirectory", (app, html) => {
     importButton.click(async () => {
         await renderGeneratorWindow();
     });
+});
+
+Hooks.once("ready", async function() {
+    //Register the API to the game object
+    game.lgm_mg = {}
+    game.lgm_mg.api = new mgApi();
 });
