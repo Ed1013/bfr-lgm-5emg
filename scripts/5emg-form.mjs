@@ -1,4 +1,5 @@
-import { monsterStats, new5eActor } from "./5emg-stats.mjs";
+import { mgNew5eActor } from "./5emg-actorgen.mjs";
+import { mgUtils } from "./5emg-utils.mjs";
 
 export async function renderGeneratorWindow(){
 
@@ -19,7 +20,7 @@ export async function renderGeneratorWindow(){
             if(result === "cancel"){
                 console.log(`User canceled monster generator`);
             } else {
-                await new5eActor(result);
+                await mgNew5eActor(result);
             }
             
         }
@@ -29,14 +30,19 @@ export async function renderGeneratorWindow(){
 function initForm(){
     let form = '<form id="5eStats">';
 
-    form+=`<label for="crSelect">Select CR:</label>
+    form+=`<div style="display: inline">
+        <div style="display: inline-block; width:20%; margin-right:5px;">
+        <label for="crSelect">Select CR:</label>
         <select name="crSelect" id="crSelect">
-        ${generateCRs()}
-    </select><br />
-    <label for="monsterName">Monster Name: </label>
-    <input name="monsterName" id="monsterName" type="text" />
-    <br>Proficient Abilities:<br>
+            ${generateCRs()}
+        </select></div>
+        <div style="display: inline-block; width:78%"><label for="monsterName">Monster Name: </label>
+        <input name="monsterName" id="monsterName" type="text" /></div>
+    </div>
+    <p><label for="abilityString">Paste Abilities: </label><br />
+    <input name="abilityString" id="abilityString" type="text" /></p>
     <div id="abilityScores">
+    <p>Proficient Abilities:<br>
         <input type="checkbox" id="str" name="abilities[]" value="strength">    
         <label for="str">STR</label>
         <input type="checkbox" id="dex" name="abilities[]" value="dexterity">
@@ -49,7 +55,9 @@ function initForm(){
         <label for="wis">WIS</label>
         <input type="checkbox" id="cha" name="abilities[]" value="charisma">
         <label for="cha">CHA</label>
-    </div>`
+    </p>
+    </div>
+    `
 
     form += '</form>';
     return form;
@@ -57,7 +65,7 @@ function initForm(){
 
 function generateCRs(){
     let select = '';
-    for (const cr in monsterStats) {
+    for (const cr in mgUtils.monsterStats) {
         select+=`<option value="${cr}">${cr}</option>`
     }
     return select;
