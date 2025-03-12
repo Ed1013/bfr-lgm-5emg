@@ -32,7 +32,27 @@ export async function mgNew5eActor(formData){
 	mgUtils.assignToObject(dummy,"system.attributes.hp.max",hpValue);
     mgUtils.assignToObject(dummy,"system.attributes.hp.value",hpValue);
 
-	//Set abilities
+	//If ability string was pasted, assign abilities
+	if(formData.abilityString.value != ''){
+		// Look for ability values, six numbers with a plus and minus or +0
+		const valueMatches = [...mgUtils.cleanString(formData.abilityString.value).matchAll(/(?<modifier>[+-]\d*)/g)];
+		if (valueMatches.length >= 6) {
+			let i=0;
+			const abilities = ["strength","dexterity","constitution","intelligence","wisdom","charisma"];
+			for(const match of valueMatches){
+				mgUtils.assignToObject(dummy,`system.abilities.${abilities[i]}.mod`,parseInt(mgUtils.cleanString(match.groups.modifier)));
+				if(i == 5){
+					break;
+				}
+				i++;
+			}
+		} else {
+			//not enough abilities pasted
+			ui.notifications.warn("Not enough abilities included in input, need 6 numbers with their corresponding signs");
+		}
+	}
+
+	//Set proficient abilities
 	for(const ability of formData["abilities[]"]){
 		if(ability.checked){
 			mgUtils.assignToObject(dummy,`system.abilities.${ability.value}.proficient`,true);

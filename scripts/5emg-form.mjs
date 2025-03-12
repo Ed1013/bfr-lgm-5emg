@@ -39,23 +39,51 @@ function initForm(){
         <div style="display: inline-block; width:78%"><label for="monsterName">Monster Name: </label>
         <input name="monsterName" id="monsterName" type="text" /></div>
     </div>
-    <p><label for="abilityString">Paste Abilities: </label><br />
+    <p><label for="abilityString">(optional) Ability Mods String: </label><br />
     <input name="abilityString" id="abilityString" type="text" /></p>
-    <div id="abilityScores">
-    <p>Proficient Abilities:<br>
+    `
+    //proficient abilities block
+    form+=`
+        <style>
+            .checkbox-group {
+                display: flex;
+                justify-content: center;
+                gap: 40px;
+            }
+
+            .checkbox-container {
+                display: flex;
+                flex-direction: column;
+                align-items: center;
+            }
+        </style>
+    (optional) Proficient Abilities:<br>
+    <div id="abilityScores" class="checkbox-group">
+        <div class="checkbox-container">
         <input type="checkbox" id="str" name="abilities[]" value="strength">    
         <label for="str">STR</label>
+        </div>
+        <div class="checkbox-container">
         <input type="checkbox" id="dex" name="abilities[]" value="dexterity">
         <label for="dex">DEX</label>
+        </div>
+        <div class="checkbox-container">
         <input type="checkbox" id="con" name="abilities[]" value="constitution">
         <label for="con">CON</label>
+        </div>
+        <div class="checkbox-container">
         <input type="checkbox" id="int" name="abilities[]" value="intelligence">
         <label for="int">INT</label>
+        </div>
+        <div class="checkbox-container">
         <input type="checkbox" id="wis" name="abilities[]" value="wisdom">
         <label for="wis">WIS</label>
+        </div>
+        <div class="checkbox-container">
         <input type="checkbox" id="cha" name="abilities[]" value="charisma">
         <label for="cha">CHA</label>
-    </p>
+        </div>
+
     </div>
     `
 

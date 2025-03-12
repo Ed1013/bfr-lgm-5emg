@@ -77,7 +77,10 @@ export class mgUtils{
         return output;
     }
 
-
+    static cleanString(string){
+        return string.trim().replace("–","-").replace("−","-");
+    }
+    
     static regexes = {
         "featureTitle" : /^(([A-Z][\w\d\-+,;'’]+[\s\-]?)((of|and|the|from|in|at|on|with|to|by|into)\s)?([\w\d\-+,;'’]+\s?){0,3}(\((?!spell save)[^)]+\))?)[.!]/,
         "featureDetails" : /(?<name>^(([A-Z][\w\d\-+,;'’]+[\s\-]?)((of|and|the|from|in|at|on|with|to|by|into)\s)?([\w\d\-+,;'’]+\s?){0,3}(\((?!spell save)[^)]+\))?)[.!])(?<details>.*)/,
