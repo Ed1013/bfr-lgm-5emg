@@ -7,13 +7,16 @@ When the module is active, you will see a button at the bottom of the actors tab
 ![Image1](images/readme_image_1.webp)
 
 Clicking the button will open a window: 
+
 - Select the desired monster's CR.
-- *Optionally*, you can specify the monster's name and choose the monster's proficient abilities.
 
 ![Image2](images/readme_image_2.webp)
 
+- *Optional* Ability Mods String: paste the abilities string from a statblock, or enter 6 numbers with their correspnding signs (like +2, -1 or +0) and it will assign the ability mods to the new actor in order.
+- *Optional* Proficient Abilities: select proficient abilities, and it will auto set those to the number specified in the lazy GM generator document for proficiency.
 
-When you click Submit a new actor will be created with the specified monster name (or 'New Monster' if name not specified).
+
+When you click Submit a new actor will be created with the specified monster name (or 'New Monster' if monster name was not specified).
 
 ![Image3](images/readme_image_3.webp)
 
