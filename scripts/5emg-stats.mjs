@@ -35,22 +35,22 @@ export const monsterStats = {
 	"CR 30": {"acdc": 27, "hp": "666 (500-833)", "atkprof": "19", "dpr": "312", "atks": 5, "dmg": "62 (6d10 + 29)"}
 };
 
-export async function newFofActor(formData){
-	if(formData.monsterName.trim() === ''){
-		formData.monsterName = 'New Monster'
+export async function new5eActor(formData){
+	if(formData.monsterName.value.trim() === ''){
+		formData.monsterName.value = 'New Monster'
 	}
 
-	const selStats = monsterStats[formData.crSelect];
+	const selStats = monsterStats[formData.crSelect.value];
 
 	const newActor = await Actor.create({
-        name: formData.monsterName,
+        name: formData.monsterName.value,
         type: "npc"
     });
 	//placeholder object to edit changes
 	const dummy = {...newActor};
 
 	//set CR
-	const crValue = formData.crSelect.match(/[\d\/]+/)[0];
+	const crValue = formData.crSelect.value.match(/[\d\/]+/)[0];
 	if (crValue.includes("/")) {
 		dummy.system.attributes.cr = parseFraction(crValue);
 	} else {
@@ -69,9 +69,9 @@ export async function newFofActor(formData){
 
 	//Set abilities
 	for(const ability of formData["abilities[]"]){
-		if(ability){
-			assignToObject(dummy,`system.abilities.${ability}.proficient`,true);
-			assignToObject(dummy,`system.abilities.${ability}.mod`,abilityAssign(newActor.system.attributes.cr, selStats.atkprof));
+		if(ability.checked){
+			assignToObject(dummy,`system.abilities.${ability.value}.proficient`,true);
+			assignToObject(dummy,`system.abilities.${ability.value}.mod`,abilityAssign(newActor.system.attributes.cr, selStats.atkprof));
 		}
 	}
 

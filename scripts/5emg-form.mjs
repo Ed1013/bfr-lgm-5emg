@@ -1,32 +1,33 @@
-import { monsterStats, newFofActor } from "./fof-stats.mjs";
+import { monsterStats, new5eActor } from "./5emg-stats.mjs";
 
 export async function renderGeneratorWindow(){
-    new Dialog({
-        title: `New Monster Stats`,
+
+    new foundry.applications.api.DialogV2({
+        window: { title: "New Monster Stats" },
         content: initForm(),
-        buttons: {
-            yes: {
-                icon: "<i class='fas fa-check'></i>",
-                label: `Submit`,
-                callback: async (html) => {
-                    const fofForm = html[0].querySelector('#fofStats');
-                    const fofData = new FormDataExtended(fofForm);
-
-                    await newFofActor(fofData.object);
-                }
-            },
-
-            no: {
-                icon: "<i class='fas fa-times'></i>",
-                label: `Cancel`
-            },
+        buttons: [{
+            action: "submit",
+            label: "Submit",
+            default: true,
+            callback: (event, button, dialog) => { return button.form.elements }
         },
-        default: "no"
-    }).render(true)
+        {
+            action: "cancel",
+            label: "Cancel",
+        }],
+        submit: async result => {
+            if(result === "cancel"){
+                console.log(`User canceled monster generator`);
+            } else {
+                await new5eActor(result);
+            }
+            
+        }
+    }).render({ force: true });
 }
 
 function initForm(){
-    let form = '<form id="fofStats">';
+    let form = '<form id="5eStats">';
 
     form+=`<label for="crSelect">Select CR:</label>
         <select name="crSelect" id="crSelect">
