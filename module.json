@@ -27,6 +27,28 @@
           "ASSISTANT": "OWNER"
         },
         "system": "black-flag"
+      },
+      {
+        "name": "general-use-combat-stat-blocks",
+        "label": "General-Use Combat Stat Blocks",
+        "path": "packs/general-use-combat-stat-blocks",
+        "type": "Actor",
+        "ownership": {
+          "PLAYER": "OBSERVER",
+          "ASSISTANT": "OWNER"
+        },
+        "system": "black-flag"
+      },
+      {
+        "name": "useful-monster-features",
+        "label": "Useful Monster Features",
+        "path": "packs/useful-monster-features",
+        "type": "Item",
+        "ownership": {
+          "PLAYER": "OBSERVER",
+          "ASSISTANT": "OWNER"
+        },
+        "system": "black-flag"
       }
     ],
     "url": "https://github.com/Ed1013/bfr-lgm-5emg",
