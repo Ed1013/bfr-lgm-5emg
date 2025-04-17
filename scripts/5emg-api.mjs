@@ -7,4 +7,50 @@ export class mgApi {
         const actors = game.actors.filter((act) => act.name === "New Monster")
         actors.forEach(actor1 => actor1.delete())
     }
+
+    async addMonsterFeatures(){
+        const selectedMonster = game.actors.get(ui.activeWindow?.document?.id);
+        if(selectedMonster?.type==="npc"){
+            const dialogPrompt = new foundry.applications.api.DialogV2({
+                window: { title: `Add features to ${selectedMonster.name}` },
+                content: `<label for="featureType">Feature type:</label>
+                            <select name="featureType" id="featuretype">
+                                <option value="feature">Feature</option>
+                                <option value="action">Action</option>
+                                <option value="bonus">Bonus Action</option>
+                                <option value="reaction">Reaction</option>
+                                <option value="spellcasting">Spellcasting</option>
+                                <option value="legendary">Legendary Action</option>
+                            </select>
+                            <label for="pastedFeature">Paste feature:</label>
+                            <textarea id="pastedFeature" name="pastedFeature" rows="20" cols="40"></textarea>`,
+                buttons: [{
+                    action: "add",
+                    label: "Submit",
+                    callback: (event, button, dialog) => { return button.form.elements }
+                },
+                { action: "cancel",
+                    label: "Cancel"
+                }],
+                submit: (submittedData) => {
+                    if(submittedData){
+                        //console.log(submittedData);
+                        const featureType = submittedData.namedItem("featureType").value;
+                        switch(featureType){
+                            case("spellcasting"):
+                                mgUtils.parseSpellcasting(submittedData.namedItem("pastedFeature").value,selectedMonster);
+                                break;
+                            default:
+                                mgUtils.parseFeature(submittedData.namedItem("pastedFeature").value,selectedMonster,featureType);
+                                break;
+                        }
+                    }
+                }
+            });
+
+            await dialogPrompt.render({ force: true });
+        } else {
+            ui.notifications.error("You must have a monster opened in the window and the context on them");
+        }
+    }
 }

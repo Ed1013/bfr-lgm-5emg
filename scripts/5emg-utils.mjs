@@ -91,78 +91,60 @@ export class mgUtils{
         "savingThrowDetails" : /must (make|succeed on) a dc (?<savedc>\d+) (?<saveability>\w+) (?<savetext>saving throw|save)/i,
         "spellcastingDetails": /spellcasting ability( score)? is (?<ability1>\w+)|(?<ability2>\w+) as the spellcasting ability|(spell )?save (dc|DC) (?<savedc>\d+)/ig,
         "spellsUses" : /(?<uses>(?<=\()\d slot|\d(?=\/day)|at will).*:(?<spells>(?:(?!\d).)*)/i,
-        "featureTypes" : [ "actions", "reactions", "bonus actions", "legendary actions", "mythic actions", "villain actions", "spellcasting", "innate spellcasting", "utility spells" ]
+        //"featureTypes" : [ "actions", "reactions", "bonus actions", "legendary actions", "mythic actions", "villain actions", "spellcasting", "innate spellcasting", "utility spells" ]
     }
     
-    static async parseFeatures(featureString, actor){
+    static async parseFeature(featureString, actor, type){
         let arrString = featureString.split(/\r?\n/);
-        const arrFeatures = [];
-        let type = "feature";
-        let i = 0;
+        let newFeature = null;
+        if(this.regexes.featureTitle.exec(arrString[0])){
+            const matchDetails = this.regexes.featureDetails.exec(arrString[0]);
+            newFeature = { "name": matchDetails.groups.name.replace(/[.!]$/,""), "details": matchDetails.groups.details, "type":type};
+        } else {
+            newFeature = { "name": "Feature", "details": arrString[0], "type":type};
+        } 
+
+        let i=1
         while(i<arrString.length){
-            if(this.regexes.featureTypes.includes(arrString[i].toLowerCase())){
-                //Setting new type to one of the default action types
-                type = arrString[i].toLowerCase().substring(0,arrString[i].length);
-                //if it's in plural remove last s, for BFR foundry system compatibility
-                type = type.replace(/s$/,'');
-                //if it's 2 words keep the first one
-                type = type.replace(/ .*/,''); //replace everything after first space with nothing
-            } else if(this.regexes.featureTitle.exec(arrString[i])){
-                const matchDetails = this.regexes.featureDetails.exec(arrString[i]);
-                let newFeature = { "name": matchDetails.groups.name.replace(/[.!]$/,""), "details": matchDetails.groups.details, "type":type};
-                i++;
-                while(i<arrString.length && this.regexes.featureTitle.exec(arrString[i]) === null && !this.regexes.featureTypes.includes(arrString[i].toLowerCase())){
-                    newFeature.details+=" "+arrString[i];
-                    i++;
-                }
-                if(newFeature.name.toLowerCase().includes("spellcasting")){
-                    ui.notifications.info("Your pasted features contain Spellcasting, use the addMonsterSpells to add those.");
-                } else {
-                    arrFeatures.push(newFeature);
-                }
-                continue;
-    
-            }
+            newFeature.details+=" "+arrString[i];
             i++;
         }
-    
-         if(arrFeatures.length > 0){
-            for(const feature of arrFeatures){
-                if(feature.type === 'feature'){
-                    await actor.createEmbeddedDocuments("Item",[{ name:feature.name, type: 'feature', system: { description: { value: this.replaceFoundrySyntax(feature.details)}}}]);
+
+        if(type === 'feature'){
+            await actor.createEmbeddedDocuments("Item",[{ name:newFeature.name, type: 'feature', system: { description: { value: this.replaceFoundrySyntax(newFeature.details)}}}]);
+        } else {
+            const atkInfo = this.regexes.attack.exec(newFeature.details)
+            if(atkInfo){ //check if is an attack
+                const dmgInfo = this.regexes.diceDamage.exec(newFeature.details)
+                
+                const newAtk = {"system":{"attack":{"bonus":atkInfo.groups.tohit, "flat": true}, "damage":{"parts":[{"additionalTypes": [ ], "bonus": (dmgInfo.groups?.bonus)? dmgInfo.groups.bonus : "", "custom": { "enabled": false, "formula": "" }, "denomination": parseInt(dmgInfo.groups.dicedenom), "number": parseInt(dmgInfo.groups.dicenum), "scaling": { "number": 1 }, "type": dmgInfo.groups.type}]}}}
+
+                await actor.createEmbeddedDocuments("Item",[{ name:newFeature.name, type: "feature", "img":"icons/skills/melee/unarmed-punch-fist-white.webp",
+                    system: { description: { value:this.replaceFoundrySyntax(newFeature.details)}, 
+                    activities: this.newActivity("attack", type, newAtk)}}]);
+
+            } else {
+                const saveInfo = this.regexes.savingThrowDetails.exec(newFeature.details);
+                if(saveInfo){ //check if it is save
+                    const dmgInfo = this.regexes.diceDamage.exec(newFeature.details)
+                    const newSave = {"system":{ "damage": { "parts": [ { "number": parseInt(dmgInfo.groups.dicenum), "denomination": dmgInfo.groups.dicedenom, "bonus": "", "custom": { "formula": "", "enabled": false }, "type": dmgInfo.groups.type, "additionalTypes": [], "scaling": { "number": 1 } } ] }, "effects": [], "save": { "ability": [ saveInfo.groups.saveability.toLowerCase() ], "dc": { "ability": "custom", "formula": saveInfo.groups.savedc }} } }
+
+                    await actor.createEmbeddedDocuments("Item",[{ name:newFeature.name, type: "feature", "img":"icons/skills/movement/figure-running-gray.webp",
+                        system: { description: { value:this.replaceFoundrySyntax(newFeature.details)}, 
+                        activities: this.newActivity("save", type, newSave)}}]);
                 } else {
-                    const atkInfo = this.regexes.attack.exec(feature.details)
-                    if(atkInfo){ //check if is an attack
-                        const dmgInfo = this.regexes.diceDamage.exec(feature.details)
-                        
-                        const newAtk = {"system":{"attack":{"bonus":atkInfo.groups.tohit, "flat": true}, "damage":{"parts":[{"additionalTypes": [ ], "bonus": (dmgInfo.groups?.bonus)? dmgInfo.groups.bonus : "", "custom": { "enabled": false, "formula": "" }, "denomination": parseInt(dmgInfo.groups.dicedenom), "number": parseInt(dmgInfo.groups.dicenum), "scaling": { "number": 1 }, "type": dmgInfo.groups.type}]}}}
-
-                        await actor.createEmbeddedDocuments("Item",[{ name:feature.name, type: "feature", "img":"icons/skills/melee/unarmed-punch-fist-white.webp",
-                            system: { description: { value:this.replaceFoundrySyntax(feature.details)}, 
-                            activities: this.newActivity("attack", feature.type, newAtk)}}]);
-
-                    } else {
-                        const saveInfo = this.regexes.savingThrowDetails.exec(feature.details);
-                        if(saveInfo){ //check if it is save
-                            const dmgInfo = this.regexes.diceDamage.exec(feature.details)
-                            const newSave = {"system":{ "damage": { "parts": [ { "number": parseInt(dmgInfo.groups.dicenum), "denomination": dmgInfo.groups.dicedenom, "bonus": "", "custom": { "formula": "", "enabled": false }, "type": dmgInfo.groups.type, "additionalTypes": [], "scaling": { "number": 1 } } ] }, "effects": [], "save": { "ability": [ saveInfo.groups.saveability.toLowerCase() ], "dc": { "ability": "custom", "formula": saveInfo.groups.savedc }} } }
-
-                            await actor.createEmbeddedDocuments("Item",[{ name:feature.name, type: "feature", "img":"icons/skills/movement/figure-running-gray.webp",
-                                system: { description: { value:this.replaceFoundrySyntax(feature.details)}, 
-                                activities: this.newActivity("save", feature.type, newSave)}}]);
-                        } else {
-                            await actor.createEmbeddedDocuments("Item",[{ name:feature.name, type: 'feature', system: { description: { value: this.replaceFoundrySyntax(feature.details)}, activities:this.newActivity("utility",feature.type)}}]);
-                        }
-                    }
+                    await actor.createEmbeddedDocuments("Item",[{ name:newFeature.name, type: 'feature', system: { description: { value: this.replaceFoundrySyntax(newFeature.details)}, activities:this.newActivity("utility",type)}}]);
                 }
-    
             }
         }
-       // console.log(arrFeatures);
     }
     
     static async parseSpellcasting(spellString, actor){
      	const pack = game.packs.get("kp-tov-players-guide.spells");
+        if(!pack){
+            ui.notifications.error("ToV Player's guide module is not active");
+            return;
+        }
         await pack.getIndex();
         
         //Add spellcasting details
@@ -188,7 +170,7 @@ export class mgUtils{
             }
         }
     
-         for(const spell of spells){
+        for(const spell of spells){
             const indexSpell=pack.index.find(e => e.name.toLowerCase().split(" ").join("") === spell.name.toLowerCase().split(" ").join(""));
             if(indexSpell){
                 let newSpell = await pack.getDocument(indexSpell._id);
