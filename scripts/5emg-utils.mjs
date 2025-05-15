@@ -91,6 +91,11 @@ export class mgUtils{
         "savingThrowDetails" : /must (make|succeed on) a dc (?<savedc>\d+) (?<saveability>\w+) (?<savetext>saving throw|save)/i,
         "spellcastingDetails": /spellcasting ability( score)? is (?<ability1>\w+)|(?<ability2>\w+) as the spellcasting ability|(spell )?save (dc|DC) (?<savedc>\d+)/ig,
         "spellsUses" : /(?<uses>(?<=\()\d slot|\d(?=\/day)|at will).*:(?<spells>(?:(?!\d).)*)/i,
+        "speciesDetails" : /^(?<size>\bfine\b|\bdiminutive\b|\btiny\b|\bsmall\b|\bmedium\b|\blarge\b|\bhuge\b|\bgargantuan\b|\bcolossal\b)(\sswarm of (?<swarmsize>\w+))?\s(?<type>\w+)([,\s]+\((?<subtype>[,\w\s]+)\))?([,\s]+(?<alignment>[\w\s\-]+))?/i,
+        "speedDetails" : /(?<name>\w+)\s?(?<value>\d+)/ig,
+        "damageTypes" : /\bbludgeoning\b|\bpiercing\b|\bslashing\b|\bacid\b|\bcold\b|\bfire\b|\blightning\b|\bnecrotic\b|\bpoison\b|\bpsychic\b|\bradiant\b|\bthunder\b/ig,
+        "conditionTypes" : /\bblinded\b|\bcharmed\b|\bdeafened\b|\bdiseased\b|\bexhaustion\b|\bfrightened\b|\bgrappled\b|\bincapacitated\b|\binvisible\b|\bparalyzed\b|\bpetrified\b|\bpoisoned\b|\bprone\b|\brestrained\b|\bstunned\b|\bunconscious\b/ig,
+        "resistancesDetails" : /(?<type>damage|condition) (?<influence>vulnerabilities|resistances|immunities)/i
         //"featureTypes" : [ "actions", "reactions", "bonus actions", "legendary actions", "mythic actions", "villain actions", "spellcasting", "innate spellcasting", "utility spells" ]
     }
     
@@ -150,12 +155,12 @@ export class mgUtils{
         //Add spellcasting details
         const castingDetails = this.regexes.spellcastingDetails.exec(spellString);
         if(castingDetails?.ability1){
-            assignToObject(actor,"system.spellcasting.ability",castingDetails.ability1.toLowerCase());
+            this.assignToObject(actor,"system.spellcasting.ability",castingDetails.ability1.toLowerCase());
         } else if(castingDetails?.ability2){
-            assignToObject(actor,"system.spellcasting.ability",castingDetails.ability2.toLowerCase());
+            this.assignToObject(actor,"system.spellcasting.ability",castingDetails.ability2.toLowerCase());
         }
         if(castingDetails?.savedc){
-            assignToObject(actor,"system.spellcasting.dc",castingDetails.savedc.toLowerCase());
+            this.assignToObject(actor,"system.spellcasting.dc",castingDetails.savedc.toLowerCase());
         }
 
         //Check spells
@@ -192,6 +197,73 @@ export class mgUtils{
             }
         } 
     }
+    
+    //Parses size, type, speeds, resistances
+    static async parseTraits(traitString, actor){
+        let arrString = traitString.split(/\r?\n/);
+        let dummy = { system: {}};
+
+        for(let line of arrString){
+            //parse size and type
+            const match1 = this.regexes.speciesDetails.exec(line);
+            if(match1){
+                this.assignToObject(dummy,"system.traits.size",match1.groups.size.toLowerCase());
+                this.assignToObject(dummy,"system.traits.type.value",match1.groups.type.toLowerCase());
+                if(match1.groups?.swarmsize){
+                    this.assignToObject(dummy,"system.traits.type.swarm",match1.groups.swarmsize.toLowerCase());
+                }
+            }
+
+
+            //parse speeds
+            if (line.toLowerCase().includes('speed')){
+                const match2 = [...line.matchAll(this.regexes.speedDetails)];
+                this.assignToObject(dummy,'system.traits.movement.types', { "walk": "@base", "climb": "", "fly": "", "swim": "", "burrow": "" });
+
+                const speeds = match2.map(m => new NameValueData(m.groups.name, m.groups.value)).filter(nv => nv.name != null && nv.value != null);
+                for(const movType of speeds){
+                    switch(movType.name.toLowerCase()){
+                        case('speed'): {
+                            dummy.system.traits.movement.base = parseInt(movType.value);
+                            break;
+                        } case ('fly'):{
+                            dummy.system.traits.movement.types.fly = movType.value;
+                            break;
+                        } case ('swim'):{
+                            dummy.system.traits.movement.types.swim = movType.value;
+                            break;
+                        } case ('climb'):{
+                            dummy.system.traits.movement.types.climb = movType.value;
+                            break;                            
+                        } case ('burrow'):{
+                            dummy.system.traits.movement.types.burrow = movType.value;
+                            break;
+                        }
+                    }    
+                }
+            }
+
+            //check if line is of damage/contidion resistances/vulnerabilities/immunities
+            const match3 = this.regexes.resistancesDetails.exec(line);
+            if(match3){
+                //parse resistances/vulnerabilities
+                if(match3.groups.type.toLowerCase() === "damage"){
+                    const dmg = [...line.matchAll(this.regexes.damageTypes)].map(m =>{ return m[0] });
+                    if (dmg){
+                        this.assignToObject(dummy,`system.traits.damage.${match3.groups.influence.toLowerCase()}.value`,dmg);
+                    }
+                } else if(match3.groups.type.toLowerCase() === "condition"){
+                    const cond = [...line.matchAll(this.regexes.conditionTypes)].map(m =>{ return m[0] });
+                    if(cond){
+                        this.assignToObject(dummy,`system.traits.condition.${match3.groups.influence.toLowerCase()}.value`,cond);
+                    }
+                }
+            } 
+        }
+
+        //add changes to actor
+        actor.update(dummy);
+    }
 
     static replaceFoundrySyntax(line){
         //clean line from newlines breaks
@@ -218,7 +290,8 @@ export class mgUtils{
     
         return newline;
     }
-
+    
+    
     static monsterStats = {
         "CR 0": {"acdc": 10, "hp": "3 (2-4)", "atkprof": "2", "dpr": "2", "atks": 1, "dmg": "2 (1d4)"},
         "CR 1/8": {"acdc": 11, "hp": "9 (7-11)", "atkprof": "3", "dpr": "3", "atks": 1, "dmg": "4 (1d6 + 1)"},
@@ -255,4 +328,11 @@ export class mgUtils{
         "CR 29": {"acdc": 26, "hp": "600 (450-750)", "atkprof": "18", "dpr": "294", "atks": 5, "dmg": "59 (6d10 + 26)"},
         "CR 30": {"acdc": 27, "hp": "666 (500-833)", "atkprof": "19", "dpr": "312", "atks": 5, "dmg": "62 (6d10 + 29)"}
     };
+}
+
+class NameValueData {
+    constructor(name, value) {
+        this.name = name;
+        this.value = value;
+    }
 }

@@ -21,9 +21,10 @@ export class mgApi {
                                 <option value="reaction">Reaction</option>
                                 <option value="spellcasting">Spellcasting</option>
                                 <option value="legendary">Legendary Action</option>
+                                <option value="traits">Traits (size, type, resistances, speeds)</option>
                             </select>
-                            <label for="pastedFeature">Paste feature:</label>
-                            <textarea id="pastedFeature" name="pastedFeature" rows="20" cols="40"></textarea>`,
+                            <label for="pastedString">Paste feature:</label>
+                            <textarea id="pastedString" name="pastedString" rows="20" cols="40"></textarea>`,
                 buttons: [{
                     action: "add",
                     label: "Submit",
@@ -38,10 +39,13 @@ export class mgApi {
                         const featureType = submittedData.namedItem("featureType").value;
                         switch(featureType){
                             case("spellcasting"):
-                                mgUtils.parseSpellcasting(submittedData.namedItem("pastedFeature").value,selectedMonster);
+                                mgUtils.parseSpellcasting(submittedData.namedItem("pastedString").value,selectedMonster);
+                                break;
+                            case("traits"):
+                                mgUtils.parseTraits(submittedData.namedItem("pastedString").value,selectedMonster);
                                 break;
                             default:
-                                mgUtils.parseFeature(submittedData.namedItem("pastedFeature").value,selectedMonster,featureType);
+                                mgUtils.parseFeature(submittedData.namedItem("pastedString").value,selectedMonster,featureType);
                                 break;
                         }
                     }
