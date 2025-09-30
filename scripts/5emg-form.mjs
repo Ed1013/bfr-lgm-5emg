@@ -44,19 +44,6 @@ function initForm(){
     `
     //proficient abilities block
     form+=`
-        <style>
-            .checkbox-group {
-                display: flex;
-                justify-content: center;
-                gap: 40px;
-            }
-
-            .checkbox-container {
-                display: flex;
-                flex-direction: column;
-                align-items: center;
-            }
-        </style>
     (optional) Proficient Abilities:<br>
     <div id="abilityScores" class="checkbox-group">
         <div class="checkbox-container">

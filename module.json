@@ -7,14 +7,17 @@
         "name": "Edgard Hernandez"
       }
     ],
-    "version": "0.0.2",
+    "version": "0.0.4",
     "compatibility": {
-        "minimum": "12",
-        "verified": "12"
+        "minimum": "13",
+        "verified": "13"
     },
     "socket":true,
     "esmodules":[
       "scripts/init-5emg-module.mjs"
+    ],
+    "styles":[
+      "css/checkboxes.css"
     ],
     "packs": [
       {
